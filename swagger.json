@@ -1,0 +1,297 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Películas",
+    "version": "1.0.0",
+    "description": "API RESTful para gestionar películas, con operaciones CRUD y funcionalidades adicionales."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de desarrollo"
+    }
+  ],
+  "paths": {
+    "/movies": {
+      "get": {
+        "tags": ["Movies"], 
+        "summary": "Obtiene una lista de películas",
+        "description": "Devuelve una lista de películas con soporte para paginación o filtros.",
+        "responses": {
+          "200": {
+            "description": "Lista de películas obtenida con éxito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Movies"],
+        "summary": "Crea una nueva película",
+        "description": "Crea una película nueva en la base de datos.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Movie"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Película creada con éxito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación en los datos proporcionados"
+          }
+        }
+      }
+    },
+    "/movies/{id}": {
+      "get": {
+        "tags": ["Movies"],
+        "summary": "Obtiene una película por ID",
+        "description": "Devuelve los detalles de una película específica.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único de la película",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Película encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Película no encontrada"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Movies"],
+        "summary": "Actualiza una película por ID",
+        "description": "Actualiza los datos de una película existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único de la película",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Movie"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Película actualizada con éxito"
+          },
+          "404": {
+            "description": "Película no encontrada"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Movies"],
+        "summary": "Elimina una película por ID",
+        "description": "Elimina una película existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único de la película",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Película eliminada con éxito"
+          },
+          "404": {
+            "description": "Película no encontrada"
+          }
+        }
+      }
+    },
+    "/movies/populado/{id}": {
+      "get": {
+        "tags": ["Movies"],
+        "summary": "Obtiene una película y sus ratings asociados",
+        "description": "Devuelve una película con sus ratings relacionados, soportando paginación.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único de la película",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Película con ratings asociados obtenida con éxito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Película no encontrada"
+          }
+        }
+      }
+    },
+    "/movies/filter/?page{page}&limit{limit}": {
+      "get": {
+        "tags": ["Movies"],
+        "summary": "Listar películas con paginación",
+        "description": "Obtiene un listado de películas o una película específica con soporte para paginación.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número de la página a obtener (por defecto: 1).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Cantidad de películas por página (por defecto: 10).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listado de películas obtenido con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Movie": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único de la película",
+            "example": "64f17f0d-57e6-4c84-9b56-1d20c0a8c830"
+          },
+          "title": {
+            "type": "string",
+            "description": "Título de la película",
+            "example": "El Señor de los Anillos"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de la película",
+            "example": "Una épica aventura en la Tierra Media."
+          },
+          "gender": {
+            "type": "string",
+            "description": "Género de la película",
+            "example": "Fantasía"
+          },
+          "image": {
+            "type": "string",
+            "description": "URL de la imagen de la película",
+            "example": "https://example.com/images/movie.jpg"
+          },
+          "publishDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha de publicación de la película",
+            "example": "2024-12-25T00:00:00.000Z"
+          },
+          "ratings": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "ID de un rating asociado",
+              "example": "64f17f0d-57e6-4c84-9b56-1d20c0a8c831"
+            }
+          }
+        },
+        "required": ["id", "title", "description", "gender", "image"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
